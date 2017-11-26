@@ -25,10 +25,13 @@ public class Main {
                 +"naME:BreaD;price:1.23;type:Food;expiration:1/02/2016##"
                 +"NAMe:BrEAD;price:1.23;type:Food;expiration:2/25/2016##";
         ItemParser itemParser = new ItemParser();
+        ArrayList<String> pleaseWork = itemParser.parseRawDataIntoStringArray(output);
 
-        for(String string: itemParser.parseRawDataIntoStringArray(output)) {
-            System.out.println(string);
-        }
+//        for(int i = 0; i < pleaseWork.size(); i++) {
+//            if (!(itemParser.checkDataForMatches(pleaseWork.get(i)))) {
+//                System.out.println(pleaseWork.get(i) + "-------" + itemParser.checkDataForMatches(pleaseWork.get(i)));
+//            }
+//        }
 //        itemParser.printOneString(rawSingleItem, 1);
         itemParser.printMultiple(output);
     }

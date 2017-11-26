@@ -12,6 +12,8 @@ import static org.junit.Assert.*;
 
 public class ItemParserTest {
 
+    private String rawData = "naMe:Milk;price:3.23;type:Food;expiration:1/25/2016##naME:BreaD;price:1.23;type:Food;expiration:1/02/2016##NAMe:BrEAD;price:1.23;type:Food;expiration:2/25/2016##naMe:MiLK;price:3.23;type:Food^expiration:1/11/2016##naMe:Cookies;price:2.25;type:Food%expiration:1/25/2016##naMe:CoOkieS;price:2.25;type:Food*expiration:1/25/2016##naMe:COokIes;price:2.25;type:Food;expiration:3/22/2016##naMe:COOkieS;price:2.25;type:Food;expiration:1/25/2016##NAME:MilK;price:3.23;type:Food;expiration:1/17/2016##naMe:MilK;price:1.23;type:Food!expiration:4/25/2016##naMe:apPles;price:0.25;type:Food;expiration:1/23/2016##naMe:apPles;price:0.23;type:Food;expiration:5/02/2016##NAMe:BrEAD;price:1.23;type:Food;expiration:1/25/2016##naMe:;price:3.23;type:Food;expiration:1/04/2016##naMe:Milk;price:3.23;type:Food;expiration:1/25/2016##naME:BreaD;price:1.23;type:Food@expiration:1/02/2016##NAMe:BrEAD;price:1.23;type:Food@expiration:2/25/2016##naMe:MiLK;priCe:;type:Food;expiration:1/11/2016##naMe:Cookies;price:2.25;type:Food;expiration:1/25/2016##naMe:Co0kieS;pRice:2.25;type:Food;expiration:1/25/2016##naMe:COokIes;price:2.25;type:Food;expiration:3/22/2016##naMe:COOkieS;Price:2.25;type:Food;expiration:1/25/2016##NAME:MilK;price:3.23;type:Food;expiration:1/17/2016##naMe:MilK;priCe:;type:Food;expiration:4/25/2016##naMe:apPles;prIce:0.25;type:Food;expiration:1/23/2016##naMe:apPles;pRice:0.23;type:Food;expiration:5/02/2016##NAMe:BrEAD;price:1.23;type:Food;expiration:1/25/2016##naMe:;price:3.23;type:Food^expiration:1/04/2016##";
+
     private String nothing = "";
 
     private String rawSingleItem =    "naMe:Milk;price:3.23;type:Food;expiration:1/25/2016##";
@@ -34,6 +36,27 @@ public class ItemParserTest {
     }
 
     @Test
+    public void numberOfErrorsTest(){
+        int expected = 4;
+        ArrayList<String> tempArray = itemParser.parseRawDataIntoStringArray(rawData);
+        ArrayList<String> temp = itemParser.removeNonMatches(tempArray);
+
+        int actual = itemParser.numberOfErrors(tempArray, temp);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void removeNonMatchesTest(){
+        int expected = 24;
+        ArrayList<String> temp = itemParser.parseRawDataIntoStringArray(rawData);
+
+        int actual = itemParser.removeNonMatches(temp).size();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
     public void getSingeCountTest(){
         int expected = 2;
         Map<String, Integer> temp = itemParser.nameValueCounter(rawMultipleItems);
@@ -44,7 +67,7 @@ public class ItemParserTest {
     }
 
     @Test
-    public void nameVauleCounterTest(){
+    public void nameValueCounterTest(){
         String expected = "{bread=2, milk=1}";
 
         String actual = itemParser.nameValueCounter(rawMultipleItems).toString();

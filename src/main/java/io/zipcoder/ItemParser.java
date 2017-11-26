@@ -11,23 +11,15 @@ import java.util.regex.Pattern;
 
 public class ItemParser {
 
-    Integer counter;
 
-    public void printMultiple(String rawData)throws  NullPointerException{
-        ArrayList<String> temp = parseRawDataIntoStringArray(rawData);
-        int errors = 0;
-        try{
-        for(int i = 0; i < temp.size(); i++) {
-            Item tempItem = parseStringIntoItem(temp.get(i));
-            if (!(checkDataForMatches(temp.get(i)))) {
-                temp.remove(i);
-                errors++;
-            }
+    public void printMultiple(String rawData){
+        ArrayList<String> tempWithErrors = parseRawDataIntoStringArray(rawData);
+        ArrayList<String> tempWithoutErrors = removeNonMatches(tempWithErrors);
+        int errors = numberOfErrors(tempWithErrors, tempWithoutErrors);
+        for(String string: tempWithoutErrors) {
+            Item tempItem = parseStringIntoItem(string);
             Map<String, Integer> nameCounter = nameValueCounter(rawData);
-            printOneString(temp.get(i), getSingleCount(nameCounter,tempItem.getName()));
-        }
-        }catch (NullPointerException npe){
-            errors++;
+            printOneString(string, getSingleCount(nameCounter,tempItem.getName()));
         }
         System.out.printf("\n\nErrors \t\t\t\t seen: %d times", errors);
     }
@@ -41,17 +33,31 @@ public class ItemParser {
         System.out.print("-------------\t\t -------------");
     }
 
+    public ArrayList<String> removeNonMatches(ArrayList<String> rawArray){
+        ArrayList<String> toReturn = new ArrayList<>();
+        for(int i = 0; i < rawArray.size(); i++) {
+            if (checkDataForMatches(rawArray.get(i))) {
+                toReturn.add(rawArray.get(i));
+            }
+        }
+        return toReturn;
+    }
+
+    public int numberOfErrors(ArrayList<String> rawArray, ArrayList<String> rawArrayWithoutDuplicates){
+        return new Integer(rawArray.size() - rawArrayWithoutDuplicates.size());
+    }
+
     public boolean checkDataForMatches(String rawData){
             if(patternMatcherExpiration(rawData) && patterMatcherName(rawData) && patternMaterPrice(rawData) && patternMaterType(rawData).equals(true)){
                 return true;
         }
-        counter++;
         return false;
     }
 
     public ArrayList<String> allNameValues(String rawData){
         ArrayList<String> nameValue = new ArrayList<>();
         ArrayList<String> temp = parseRawDataIntoStringArray(rawData);
+        temp = removeNonMatches(temp);
         for(String name: temp){
             ArrayList<String> forLoop = findKeyValuePairsInRawItemData(name);
             nameValue.add(forLoop.get(1).toLowerCase());
@@ -146,24 +152,4 @@ public class ItemParser {
         String toReturn = toFind.get(7).toLowerCase();
         return toReturn;
     }
-
-
-
-
-
-
-
-
-
-
-
-//    private String compareListItems (Pattern pattern, String rawData) throws ItemParseException {
-//        if(pattern.matcher(rawData).matches()){
-//            ArrayList<String> arrayToReturn = splitStringWithRegexPattern(":", rawData);
-//            rawData = arrayToReturn.get(1).toUpperCase();
-//        }else {
-//            throw new ItemParseException("This doesn't work");
-//            }
-//        return rawData;
-//    }
 }
